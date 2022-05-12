@@ -86,15 +86,17 @@ export async function putEntry(
     value: JSONValue,
     version: number
 ): Promise<void> {
+    console.log("space id = " + spaceID);
     const entry = await Entry.findOne({ spaceid: spaceID, key: key });
     if (entry) {
+        entry.spaceid = spaceID;
         entry.value = JSON.stringify(value);
         entry.deleted = false;
         entry.version = version;
         entry.lastmodified = Date.now();
         return entry.save();
     } else {
-        await Entry.create({ spaceID: spaceID, key: key, value: JSON.stringify(value), deleted: false, version: version, lastmodified: Date.now() });
+        await Entry.create({ spaceid: spaceID, key: key, value: JSON.stringify(value), deleted: false, version: version, lastmodified: Date.now() });
         return;
     }
 }
