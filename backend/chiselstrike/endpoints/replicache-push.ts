@@ -1,5 +1,6 @@
 import { Space } from "../models/Space";
 import { Client } from "../models/Client";
+import { mutators } from "../../../frontend/mutators";
 
 export default async function (req: Request): Promise<Response> {
     console.log("PUSH");
@@ -18,6 +19,18 @@ export default async function (req: Request): Promise<Response> {
     for (const mutation of push.mutations) {
         console.log(mutation.name);
         console.log(mutation.args);
+        const mutator = (mutators as any)[mutation.name];
+        if (!mutator) {
+          console.error(`Unknown mutator: ${mutation.name} - skipping`);
+        }
+  
+        try {
+          await mutator(null, mutation.args);
+        } catch (e) {
+          console.error(
+            `Error executing mutator: ${JSON.stringify(mutator)}: ${e}`
+          );
+        }
     }
     return new Response("");
 }
