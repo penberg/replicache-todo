@@ -7,4 +7,12 @@ Intended for customers to clone and start editing.
 
 ## To get started
 
-Follow the instructions in the [Replicache Getting Started Guide](https://doc.replicache.dev/).
+```
+npm run dev
+```
+
+```
+cd backend/chiselstrike && npm run dev
+```
+
+Also see the original instructions in the [Replicache Getting Started Guide](https://doc.replicache.dev/).
