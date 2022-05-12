@@ -10,7 +10,7 @@ import {
     filterAsyncIterable,
 } from "replicache";
 
-import { Entry} from "../models/Entry";
+import { Entry } from "../models/Entry";
 
 type CacheMap = Map<string, { value: JSONValue | undefined; dirty: boolean }>;
 
@@ -45,7 +45,7 @@ export class ReplicacheTransaction implements WriteTransaction {
         if (cached) {
             return cached.value;
         }
-        const entry = await Entry.findOne({spaceid: this._spaceID, key});
+        const entry = await Entry.findOne({ spaceid: this._spaceID, key });
         const value = entry?.value;
         this._cache.set(key, { value, dirty: false });
         return value;
@@ -58,6 +58,9 @@ export class ReplicacheTransaction implements WriteTransaction {
         throw new Error("not implemented");
     }
     scan(options: ScanOptions = {} as ScanNoIndexOptions): ScanResult<string, JSONValue> {
+        throw new Error("not implemented");
+    }
+    async flush(): Promise<void> {
         throw new Error("not implemented");
     }
 }
