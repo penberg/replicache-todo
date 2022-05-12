@@ -38,5 +38,6 @@ export default async function (req: Request): Promise<Response> {
           );
         }
     }
+    console.log("PUSH DONE");
     return new Response("");
 }
