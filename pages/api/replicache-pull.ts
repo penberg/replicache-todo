@@ -1,11 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { transact } from "../../backend/pg";
+import { transact } from "../../backend/supabase/pg";
 import {
   createDatabase,
   getChangedEntries,
   getCookie,
   getLastMutationID,
-} from "../../backend/data";
+} from "../../backend/supabase/data";
 import { z } from "zod";
 import { PullResponse } from "replicache";
 
