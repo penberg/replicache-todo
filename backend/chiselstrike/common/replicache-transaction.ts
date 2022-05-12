@@ -61,6 +61,53 @@ export class ReplicacheTransaction implements WriteTransaction {
         throw new Error("not implemented");
     }
     async flush(): Promise<void> {
-        throw new Error("not implemented");
+        await Promise.all(
+            [...this._cache.entries()]
+                .filter(([, { dirty }]) => dirty)
+                .map(([k, { value }]) => {
+                    if (value === undefined) {
+                        return delEntry(this._spaceID, k, this._version);
+                    } else {
+                        return putEntry(
+                            this._spaceID,
+                            k,
+                            value,
+                            this._version
+                        );
+                    }
+                })
+        );
     }
+}
+
+export async function putEntry(
+    spaceID: string,
+    key: string,
+    value: JSONValue,
+    version: number
+): Promise<void> {
+    const entry = await Entry.findOne({ spaceid: spaceID, key: key });
+    if (entry) {
+        entry.value = JSON.stringify(value);
+        entry.deleted = false;
+        entry.version = version;
+        entry.lastmodified = Date.now();
+        return entry.save();
+    } else {
+        await Entry.create({ spaceID: spaceID, key: key, value: JSON.stringify(value), deleted: false, version: version, lastmodified: Date.now() });
+        return;
+    }
+}
+
+async function delEntry(
+    spaceID: string,
+    key: string,
+    version: number
+): Promise<void> {
+    const entry = await Entry.findOne({ spaceid: spaceID, version: version });
+    if (entry) {
+        entry.deleted = true;
+        return entry.save();
+    }
+    return;
 }
