@@ -1,6 +1,7 @@
 import { Space } from "../models/Space";
 import { Client } from "../models/Client";
 import { mutators } from "../../../frontend/mutators";
+import { ReplicacheTransaction } from "../common/replicache-transaction";
 
 export default async function (req: Request): Promise<Response> {
     console.log("PUSH");
@@ -16,7 +17,12 @@ export default async function (req: Request): Promise<Response> {
     console.log("Previous version: " + prevVersion);
     console.log("Next version: " + nextVersion);
     console.log("Last mutation ID: " + lastMutationID);
-    for (const mutation of push.mutations) {
+    const tx = new ReplicacheTransaction(
+        spaceID,
+        push.clientID,
+        nextVersion
+      );
+      for (const mutation of push.mutations) {
         console.log(mutation.name);
         console.log(mutation.args);
         const mutator = (mutators as any)[mutation.name];
@@ -25,7 +31,7 @@ export default async function (req: Request): Promise<Response> {
         }
   
         try {
-          await mutator(null, mutation.args);
+          await mutator(tx, mutation.args);
         } catch (e) {
           console.error(
             `Error executing mutator: ${JSON.stringify(mutator)}: ${e}`
