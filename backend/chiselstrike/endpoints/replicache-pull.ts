@@ -8,10 +8,8 @@ export default async function (req: Request): Promise<Response> {
     const spaceID = url.searchParams.get("spaceID");
     const pull = await req.json();
     let requestCookie = pull.cookie ?? 0;
-    const entries = await Entry.cursor().filter((entry) =>
-        entry.spaceid == spaceID && entry.version > requestCookie
-    ).toArray();
-    const lastMutationID = (await Client.findOne({ clientID: pull.clientID }))
+    const clientID = pull.clientID;
+    const lastMutationID = (await Client.findOne({ clientID }))
         ?.lastmutationid;
     const responseCookie = (await Space.findOne({ spaceID }))?.version;
     const resp = {
@@ -19,6 +17,9 @@ export default async function (req: Request): Promise<Response> {
         cookie: responseCookie ?? 0,
         patch: [],
     };
+    const entries = await Entry.findMany((entry) =>
+        entry.spaceid == spaceID && entry.version > requestCookie
+    );
     for (const entry of entries) {
         if (entry.deleted) {
             resp.patch.push({
@@ -26,10 +27,11 @@ export default async function (req: Request): Promise<Response> {
                 key: entry.key,
             });
         } else {
+            const value = JSON.parse(entry.value);
             resp.patch.push({
                 op: "put",
                 key: entry.key,
-                value: JSON.parse(entry.value),
+                value,
             });
         }
     }
