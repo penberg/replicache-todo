@@ -1,7 +1,7 @@
-import { responseFromJson } from "@chiselstrike/api";
+import { Client } from "../models/Client";
 import { Entry } from "../models/Entry";
 import { Space } from "../models/Space";
-import { Client } from "../models/Client";
+import { responseFromJson } from "@chiselstrike/api";
 
 export default async function (req: Request): Promise<Response> {
     const url = new URL(req.url);
@@ -9,8 +9,7 @@ export default async function (req: Request): Promise<Response> {
     const pull = await req.json();
     let requestCookie = pull.cookie ?? 0;
     const clientID = pull.clientID;
-    const lastMutationID = (await Client.findOne({ clientID }))
-        ?.lastmutationid;
+    const lastMutationID = (await Client.findOne({ clientID }))?.lastmutationid;
     const responseCookie = (await Space.findOne({ spaceID }))?.version;
     const resp = {
         lastMutationID: lastMutationID ?? 0,
