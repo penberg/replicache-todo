@@ -9,12 +9,12 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@chiselstrike/api": "0.9.1",
+        "@chiselstrike/api": "0.11.0",
         "esbuild": "^0.14.14",
         "typescript": "^4.5.4",
         "zod": "^3.17.3"
     },
     "devDependencies": {
-        "@chiselstrike/cli": "0.9.1"
+        "@chiselstrike/cli": "0.11.0"
     }
 }
